@@ -1,5 +1,21 @@
 .name-tag {
-    text-decoration-line: underline
+    font-weight: bold
 }
 
 .popover-title { display: none; }
+
+.display-box {
+	display: none;
+	width: fit-content;
+	height: fit-content;
+	position: absolute;
+	border: double 10px black;
+	background-color: white;
+	max-height: 500px;
+	max-width: 500px;
+}
+
+.portrait {
+	max-width: 100%;
+	max-height: 100%;
+}
