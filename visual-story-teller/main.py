@@ -59,10 +59,11 @@ def fillChapterTemplate(inputFilePath, outputPath):
     outputFile.close()
     templateFile.close()
 
-def cleanTmpFiles(path):
+# Deletes files that end with specific extensions in a directory.
+def cleanFiles(path, extensions):
     for filename in os.listdir(path):
         filePath = os.path.join(path, filename)
-        if os.path.isfile(filePath) and os.path.splitext(filename)[1] == ".tmp":
+        if os.path.isfile(filePath) and os.path.splitext(filename)[1] in extensions:
             os.remove(filePath)
 
 # Given an ../input/ folder in the base directory with Markdown files, convert those Markdown files to HTML, put them inside a template, and put them in an ../output/ folder.
@@ -77,7 +78,7 @@ def main():
             outputFilePath = createHtmlFromMarkdown(converter, inputFilePath, outputPath)
             fillChapterTemplate(outputFilePath, outputPath)
 
-    cleanTmpFiles(outputPath)
+    cleanFiles(outputPath, [".tmp"])
 
 if __name__ == "__main__":
     main()
