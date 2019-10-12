@@ -13,12 +13,11 @@ __license__ = "MIT"
 
 currPath = os.path.dirname(__file__)
 
-def convertFile(converter, inputFilePath):
+def convertFile(converter, inputFilePath, baseFileName):
     newPath = os.path.join(currPath, os.pardir, "output")
     if not os.path.exists(newPath):
         os.makedirs(os.path.join(currPath, os.pardir, "output"))
-    newFileName = os.path.splitext(os.path.basename(inputFilePath))[0] + ".html"
-
+    newFileName = f"{baseFileName}.html"
     converter.convertFile(inputFilePath, output = os.path.join(newPath, newFileName))
 
 def main():
@@ -27,8 +26,9 @@ def main():
     inputPath = os.path.join(currPath, os.pardir, "input", "chapters")
     for filename in os.listdir(inputPath):
         inputFilePath = os.path.join(inputPath, filename)
+        baseFileName = os.path.splitext(os.path.basename(inputFilePath))[0]
         if os.path.isfile(inputFilePath):
-            convertFile(converter, inputFilePath)
+            convertFile(converter, inputFilePath, baseFileName)
 
 if __name__ == "__main__":
     main()

@@ -15,4 +15,4 @@ class NameTagPattern(InlineProcessor):
 
 class VisualStoryTellerExtension(Extension):
     def extendMarkdown(self, md, md_globals):
-        md.inlinePatterns.register(NameTagPattern(r"{(\S+)} .+", md), "NameTagPattern", 175)
+        md.inlinePatterns.register(NameTagPattern(r"{(\S+)}", md), "NameTagPattern", 175)
