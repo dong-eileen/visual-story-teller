@@ -5,6 +5,7 @@ visual-story-teller
 import markdown
 import importlib
 import os
+import shutil
 from nameTagExtension import NameTagExtension
 
 __author__ = "dong-eileen"
@@ -77,6 +78,9 @@ def main():
         if os.path.isfile(inputFilePath):
             outputFilePath = createHtmlFromMarkdown(converter, inputFilePath, outputPath)
             fillChapterTemplate(outputFilePath, outputPath)
+
+    shutil.copytree(os.path.join("static", "css"), os.path.join(outputPath, "css"));
+    shutil.copytree(os.path.join("static", "js"), os.path.join(outputPath, "js"));
 
     cleanFiles(outputPath, [".tmp"])
 

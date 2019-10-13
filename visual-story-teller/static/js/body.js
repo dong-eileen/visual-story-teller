@@ -1,7 +1,7 @@
 const displayBox = document.getElementById("display-box");
 
 const getCharacterDetails = name => getDetailsFor(getNameFromId(name));
-const getNameFromId = name => name.slice(0, -1).toLowerCase();
+const getNameFromId = name => name.toLowerCase();
 
 const initializeDisplayBox = () => {
 	const characters = document.getElementsByClassName("name-tag");
