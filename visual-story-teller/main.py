@@ -13,7 +13,7 @@ __version__ = "0.1.0"
 __license__ = "MIT"
 
 # Create a new file with the same filename as inputFilePath but different path and extension.
-def getConvertedFilePath(inputFilePath, outputPath, extension):
+def getOutputFilePath(inputFilePath, outputPath, extension):
     baseFileName = getBaseFileName(inputFilePath)
     return os.path.join(outputPath, f"{baseFileName}.{extension}")
 
@@ -32,7 +32,7 @@ def initializeDirectory(directory):
 # Convert markdown files to html and dump them in the directory specified by outputPath.
 def createHtmlFromMarkdown(converter, inputFilePath, outputPath):
     initializeDirectory(outputPath)
-    outputFilePath = getConvertedFilePath(inputFilePath, outputPath, "html.tmp")
+    outputFilePath = getOutputFilePath(inputFilePath, outputPath, "html.tmp")
     converter.convertFile(inputFilePath, output = outputFilePath)
     return outputFilePath
 
@@ -47,8 +47,8 @@ def writeFile(inputFilePath, outputFile, spacing=0):
 # Replaces title and body of the chapter template with the body given at inputFilePath, and outputs the result to outputPath/<input file name>.html
 def fillChapterTemplate(inputFilePath, outputPath):
     templateFile = open(os.path.join("static", "chapterTemplate.html"), "r")
-    print(getConvertedFilePath(inputFilePath, outputPath, "html"))
-    outputFile = open(getConvertedFilePath(inputFilePath, outputPath, "html"), "w")
+    print(getOutputFilePath(inputFilePath, outputPath, "html"))
+    outputFile = open(getOutputFilePath(inputFilePath, outputPath, "html"), "w")
     title = "Chapter " + getBaseFileName(inputFilePath)
     for line in templateFile:
         if "CHAPTER_TITLE" in line:
@@ -59,6 +59,28 @@ def fillChapterTemplate(inputFilePath, outputPath):
             outputFile.write(line)
     outputFile.close()
     templateFile.close()
+
+# Returns a stringified JSON representing a character, given the name
+def createCharacterObject(fileName):
+    name = getBaseFileName(fileName)
+    print(name)
+    return f"""
+        {name.lower()}: {{
+            name: "{name}",
+            imagePath: "./images/{name.lower()}.png"
+        }},"""
+
+# Generates character.js that stores the JSON representation of characters and image paths
+def generateCharacterFile(inputPath, outputPath):
+    outputFile = open(os.path.join(outputPath, "characters.js"), "w")
+    outputFile.write("let characters = {\n")
+    for filename in os.listdir(inputPath):
+        inputFilePath = os.path.join(inputPath, filename)
+        if os.path.isfile(inputFilePath):
+            outputFile.write(createCharacterObject(filename))
+    outputFile.write("\n};\n")
+    outputFile.write("\nconst getDetailsFor = name => characters[name];\n")
+    outputFile.close()
 
 # Deletes files that end with specific extensions in a directory.
 def cleanFiles(path, extensions):
@@ -71,16 +93,26 @@ def cleanFiles(path, extensions):
 def main():
     converter = markdown.Markdown(extensions = [NameTagExtension()], output_format = "html5")
 
-    inputPath = os.path.join(os.pardir, "input", "chapters")
+    print("*** Generating Chapter Files ***")
+    inputPath = os.path.join(os.pardir, "input")
     outputPath = os.path.join(os.pardir, "output")
-    for filename in os.listdir(inputPath):
-        inputFilePath = os.path.join(inputPath, filename)
+
+    chaptersPath = os.path.join(inputPath, "chapters")
+    for filename in os.listdir(chaptersPath):
+        inputFilePath = os.path.join(chaptersPath, filename)
         if os.path.isfile(inputFilePath):
             outputFilePath = createHtmlFromMarkdown(converter, inputFilePath, outputPath)
             fillChapterTemplate(outputFilePath, outputPath)
 
+    charactersPath = os.path.join(inputPath, "characters", "images")
+
+    print("*** Copying css, js, and image files ***")
     shutil.copytree(os.path.join("static", "css"), os.path.join(outputPath, "css"));
     shutil.copytree(os.path.join("static", "js"), os.path.join(outputPath, "js"));
+    shutil.copytree(charactersPath, os.path.join(outputPath, "images"));
+
+    print("*** Generating character files ***")
+    generateCharacterFile(charactersPath, os.path.join(outputPath, "js"))
 
     cleanFiles(outputPath, [".tmp"])
 

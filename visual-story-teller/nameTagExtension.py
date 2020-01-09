@@ -4,10 +4,10 @@ from markdown.extensions import Extension
 
 class NameTagPattern(InlineProcessor):
     def handleMatch(self, m, data):
-        print("Data: " + str(data))
-        print("Match: " + str(m))
+        # print("Data: " + str(data))
+        # print("Match: " + str(m))
         name = m.group(1)
-        print("Name: " + name)
+        # print("Name: " + name)
         newEl = etree.Element('a')
         newEl.set("class", "name-tag")
         newEl.text = name
